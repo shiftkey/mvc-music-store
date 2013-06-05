@@ -17,3 +17,6 @@ _ReSharper.*
 *.db
 *.sdf
 *.tmp
+
+*.ncrunch*
+*.dotSettings
