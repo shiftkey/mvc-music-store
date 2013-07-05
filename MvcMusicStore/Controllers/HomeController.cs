@@ -1,20 +1,27 @@
+using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
+using MvcMusicStore.Models;
+using MvcMusicStore.Models.DataAccess;
 
 namespace MvcMusicStore.Controllers
 {
     public class HomeController : Controller
     {
-        readonly IAlbumRepository albumRepository;
+        readonly Func<int, List<Album>> getTopSellingAlbums;
+        public HomeController(Func<int, List<Album>> getTopSellingAlbums)
+        {
+            this.getTopSellingAlbums = getTopSellingAlbums;
+        }
 
         public HomeController(IAlbumRepository albumRepository)
         {
-            this.albumRepository = albumRepository;
+            getTopSellingAlbums = albumRepository.GetTopSellingAlbums;
         }
 
         public ActionResult Index()
         {
-            // Get most popular albums
-            var albums = albumRepository.GetTopSellingAlbums(6);
+            var albums = getTopSellingAlbums(6);
             return View(albums);
         }
     }

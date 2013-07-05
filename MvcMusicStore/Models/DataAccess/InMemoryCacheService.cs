@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace MvcMusicStore
+namespace MvcMusicStore.Models.DataAccess
 {
     public interface ICacheService
     {
         T Get<T>(string key);
-        void Add<T>(string key, T entity);
+        T Get<T>(string key, Func<T> produceResult);
     }
 
     // TODO: handle cross-threading concerns
@@ -16,16 +17,23 @@ namespace MvcMusicStore
 
         public T Get<T>(string key)
         {
+            return Get(key, () => default(T));
+        }
+
+        public T Get<T>(string key, Func<T> produceResult)
+        {
             object value;
             if (storage.TryGetValue(key, out value))
                 return (T)value;
 
-            return default(T);
-        }
+            var newValue = produceResult();
 
-        public void Add<T>(string key, T entity)
-        {
-            storage[key] = entity;
+            if (!Equals(newValue, default(T)))
+            {
+                storage[key] = newValue;
+            }
+
+            return newValue;
         }
     }
 }

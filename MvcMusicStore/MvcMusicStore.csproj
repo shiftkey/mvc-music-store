@@ -288,8 +288,8 @@
     <Content Include="Images\placeholder.png" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Compile Include="InMemoryCacheService.cs" />
-    <Compile Include="AlbumRepository.cs" />
+    <Compile Include="Models\DataAccess\InMemoryCacheService.cs" />
+    <Compile Include="Models\DataAccess\AlbumRepository.cs" />
     <None Include="Scripts\jquery-2.0.2.intellisense.js" />
     <Content Include="Scripts\jquery-2.0.2.js" />
     <Content Include="Scripts\jquery-2.0.2.min.js" />

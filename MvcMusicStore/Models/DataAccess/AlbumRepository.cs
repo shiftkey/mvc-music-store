@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MvcMusicStore.Models;
 
-namespace MvcMusicStore
+namespace MvcMusicStore.Models.DataAccess
 {
     public interface IAlbumRepository
     {
@@ -37,15 +36,7 @@ namespace MvcMusicStore
 
         public List<Album> GetTopSellingAlbums(int count)
         {
-            var cachedValue = cacheService.Get<List<Album>>("top-selling-albums");
-            if (cachedValue == default(List<Album>))
-            {
-                var freshValue = repository.GetTopSellingAlbums(count);
-                cacheService.Add("top-selling-albums", freshValue);
-                return freshValue;
-            }
-            
-            return cachedValue;
+            return cacheService.Get("top-selling-albums", () => repository.GetTopSellingAlbums(count));
         }
     }
 }
