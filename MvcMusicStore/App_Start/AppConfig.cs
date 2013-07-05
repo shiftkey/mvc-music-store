@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Autofac;
 using Autofac.Integration.Mvc;
 using MvcMusicStore.Filters;
 using MvcMusicStore.Models;
@@ -19,20 +20,20 @@ namespace MvcMusicStore
             System.Data.Entity.Database.SetInitializer(new SampleData());
 
             var builder = new ContainerBuilder();
-            builder.RegisterControllers(typeof(MvcApplication).Assembly);
+            var thisAssembly = typeof(MvcApplication).Assembly;
+            builder.RegisterControllers(thisAssembly);
 
-            builder.RegisterType<AlbumRepository>().AsImplementedInterfaces();
+            builder.RegisterAssemblyTypes(thisAssembly)
+                   .Where(t => t.Name.EndsWith("Repository") && !t.IsInterface)
+                   .AsImplementedInterfaces();
+
             builder.RegisterType<InMemoryCacheService>().AsImplementedInterfaces();
-
-            builder.Register<Func<int, List<Album>>>(a =>
-            {
-                var cacheService = a.Resolve<ICacheService>();
-                var repository = a.Resolve<IAlbumRepository>();
-                return count => cacheService.Get("top-selling-albums", () => repository.GetTopSellingAlbums(count));
-            });
-
-            //builder.RegisterDecorator<IAlbumRepository>(
-            //    (c, inner) => new CacheableAlbumRepository(inner, c.Resolve<ICacheService>()), "repository");
+            builder.RegisterDecorator<IAlbumRepository>(
+                (c, inner) => new AlbumRepositoryCache(inner, c.Resolve<ICacheService>()), "repository");
+            builder.RegisterDecorator<IArtistsRepository>(
+                (c, inner) => new ArtistsRepositoryCache(inner, c.Resolve<ICacheService>()), "repository");
+            builder.RegisterDecorator<IGenresRepository>(
+                (c, inner) => new GenresRepositoryCache(inner, c.Resolve<ICacheService>()), "repository");
 
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
