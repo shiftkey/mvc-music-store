@@ -9,10 +9,6 @@ namespace MvcMusicStore.Controllers
     public class HomeController : Controller
     {
         readonly Func<int, List<Album>> getTopSellingAlbums;
-        public HomeController(Func<int, List<Album>> getTopSellingAlbums)
-        {
-            this.getTopSellingAlbums = getTopSellingAlbums;
-        }
 
         public HomeController(IAlbumRepository albumRepository)
         {

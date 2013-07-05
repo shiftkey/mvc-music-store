@@ -1,56 +1,45 @@
-﻿using MvcMusicStore.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
+using MvcMusicStore.Models.DataAccess;
 
 namespace MvcMusicStore.Controllers
 {
     public class StoreController : Controller
     {
-        MusicStoreEntities storeDB = new MusicStoreEntities();
-        //
-        // GET: /Store/
+        readonly IGenresRepository genresRepository;
+        readonly IAlbumRepository albumRepository;
+
+        public StoreController(IGenresRepository genresRepository,
+            IAlbumRepository albumRepository)
+        {
+            this.genresRepository = genresRepository;
+            this.albumRepository = albumRepository;
+        }
 
         public ActionResult Index()
         {
-            var genres = storeDB.Genres.ToList();
-
+            var genres = genresRepository.GetAll();
             return View(genres);
         }
 
-
         //
         // GET: /Store/Browse?genre=Disco
-
         public ActionResult Browse(string genre)
         {
             // Retrieve Genre genre and its Associated associated Albums albums from database
-            var genreModel = storeDB.Genres.Include("Albums")
-                .Single(g => g.Name == genre);
-
+            var genreModel = genresRepository.Get(genre);
             return View(genreModel);
         }
 
-        public ActionResult Details(int id) 
+        public ActionResult Details(int id)
         {
-            var album = storeDB.Albums.Find(id);
-
+            var album = albumRepository.GetById(id);
             return View(album);
         }
 
         [ChildActionOnly]
         public ActionResult GenreMenu()
         {
-            var genres = storeDB.Genres
-                .OrderByDescending(
-                    g => g.Albums.Sum(
-                    a => a.OrderDetails.Sum(
-                    od => od.Quantity)))
-                .Take(9)
-                .ToList();
-
+            var genres = genresRepository.GetSorted(9);
             return PartialView(genres);
         }
     }
