@@ -21,11 +21,11 @@ namespace MvcMusicStore
             var builder = new ContainerBuilder();
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
 
-            builder.RegisterType<AlbumRepository>().Named<IAlbumRepository>("inner");
+            builder.RegisterType<AlbumRepository>().Named<IAlbumRepository>("repository");
             builder.RegisterType<InMemoryCacheService>().AsImplementedInterfaces();
 
             builder.RegisterDecorator<IAlbumRepository>(
-                (c, inner) => new CacheableAlbumRepository(inner, c.Resolve<ICacheService>()), "inner");
+                (c, inner) => new CacheableAlbumRepository(inner, c.Resolve<ICacheService>()), "repository");
 
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));

@@ -26,22 +26,22 @@ namespace MvcMusicStore
 
     public class CacheableAlbumRepository : IAlbumRepository
     {
-        readonly IAlbumRepository _inner;
-        readonly ICacheService _cacheService;
+        readonly IAlbumRepository repository;
+        readonly ICacheService cacheService;
 
-        public CacheableAlbumRepository(IAlbumRepository inner, ICacheService cacheService)
+        public CacheableAlbumRepository(IAlbumRepository repository, ICacheService cacheService)
         {
-            _inner = inner;
-            _cacheService = cacheService;
+            this.repository = repository;
+            this.cacheService = cacheService;
         }
 
         public List<Album> GetTopSellingAlbums(int count)
         {
-            var cachedValue = _cacheService.Get<List<Album>>("top-selling-albums");
+            var cachedValue = cacheService.Get<List<Album>>("top-selling-albums");
             if (cachedValue == default(List<Album>))
             {
-                var freshValue = _inner.GetTopSellingAlbums(count);
-                _cacheService.Add("top-selling-albums", freshValue);
+                var freshValue = repository.GetTopSellingAlbums(count);
+                cacheService.Add("top-selling-albums", freshValue);
                 return freshValue;
             }
             
