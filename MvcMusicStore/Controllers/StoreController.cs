@@ -5,20 +5,20 @@ namespace MvcMusicStore.Controllers
 {
     public class StoreController : Controller
     {
-        readonly IGenresRepository genresRepository;
+        readonly IGenresRepository genres;
         readonly IAlbumRepository albumRepository;
 
-        public StoreController(IGenresRepository genresRepository,
+        public StoreController(IGenresRepository genres,
             IAlbumRepository albumRepository)
         {
-            this.genresRepository = genresRepository;
+            this.genres = genres;
             this.albumRepository = albumRepository;
         }
 
         public ActionResult Index()
         {
-            var genres = genresRepository.GetAll();
-            return View(genres);
+            var allGenres = genres.GetAll();
+            return View(allGenres);
         }
 
         //
@@ -26,7 +26,7 @@ namespace MvcMusicStore.Controllers
         public ActionResult Browse(string genre)
         {
             // Retrieve Genre genre and its Associated associated Albums albums from database
-            var genreModel = genresRepository.Get(genre);
+            var genreModel = genres.Get(genre);
             return View(genreModel);
         }
 
@@ -39,8 +39,8 @@ namespace MvcMusicStore.Controllers
         [ChildActionOnly]
         public ActionResult GenreMenu()
         {
-            var genres = genresRepository.GetSorted(9);
-            return PartialView(genres);
+            var allGenres = genres.GetSorted(9);
+            return PartialView(allGenres);
         }
     }
 }

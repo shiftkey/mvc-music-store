@@ -54,4 +54,36 @@ namespace MvcMusicStore.Models.DataAccess
             GC.SuppressFinalize(this);
         }
     }
+
+    public class GenresRepositoryCache : IGenresRepository
+    {
+        readonly IGenresRepository repository;
+        readonly ICacheService cacheService;
+
+        public GenresRepositoryCache(IGenresRepository repository, ICacheService cacheService)
+        {
+            this.repository = repository;
+            this.cacheService = cacheService;
+        }
+
+        public void Dispose()
+        {
+            repository.Dispose();
+        }
+
+        public List<Genre> GetAll()
+        {
+            return cacheService.Get("genres-getall", () => repository.GetAll());
+        }
+
+        public List<Genre> GetSorted(int take)
+        {
+            return cacheService.Get("genres-getsorted-" + take, () => repository.GetSorted(take));
+        }
+
+        public Genre Get(string genre)
+        {
+            return cacheService.Get("genres-get" + genre, () => repository.Get(genre));
+        }
+    }
 }

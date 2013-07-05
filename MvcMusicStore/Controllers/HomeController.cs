@@ -8,17 +8,17 @@ namespace MvcMusicStore.Controllers
 {
     public class HomeController : Controller
     {
-        readonly Func<int, List<Album>> getTopSellingAlbums;
+        private readonly IAlbumRepository albums;
 
-        public HomeController(IAlbumRepository albumRepository)
+        public HomeController(IAlbumRepository albums)
         {
-            getTopSellingAlbums = albumRepository.GetTopSellingAlbums;
+            this.albums = albums;
         }
 
         public ActionResult Index()
         {
-            var albums = getTopSellingAlbums(6);
-            return View(albums);
+            var topAlbums = albums.GetTopSellingAlbums(6);
+            return View(topAlbums);
         }
     }
 }

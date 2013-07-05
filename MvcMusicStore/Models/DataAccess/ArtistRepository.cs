@@ -37,4 +37,26 @@ namespace MvcMusicStore.Models.DataAccess
             GC.SuppressFinalize(this);
         }
     }
+
+    public class ArtistsRepositoryCache : IArtistsRepository
+    {
+        readonly IArtistsRepository repository;
+        readonly ICacheService cacheService;
+
+        public ArtistsRepositoryCache(IArtistsRepository repository, ICacheService cacheService)
+        {
+            this.repository = repository;
+            this.cacheService = cacheService;
+        }
+
+        public void Dispose()
+        {
+            repository.Dispose();
+        }
+
+        public IEnumerable<Artist> GetAll()
+        {
+            return cacheService.Get("artists-all", () => repository.GetAll());
+        }
+    }
 }

@@ -84,12 +84,12 @@ namespace MvcMusicStore.Models.DataAccess
         }
     }
 
-    public class CacheableAlbumRepository : IAlbumRepository
+    public class AlbumRepositoryCache : IAlbumRepository
     {
         readonly IAlbumRepository repository;
         readonly ICacheService cacheService;
 
-        public CacheableAlbumRepository(IAlbumRepository repository, ICacheService cacheService)
+        public AlbumRepositoryCache(IAlbumRepository repository, ICacheService cacheService)
         {
             this.repository = repository;
             this.cacheService = cacheService;

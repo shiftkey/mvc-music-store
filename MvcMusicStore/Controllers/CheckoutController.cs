@@ -50,8 +50,7 @@ namespace MvcMusicStore.Controllers
                     // Save all changes
                     storeDB.SaveChanges();
 
-                    return RedirectToAction("Complete",
-                        new { id = order.OrderId });
+                    return RedirectToAction("Complete", new { id = order.OrderId });
                 }
 
             }
