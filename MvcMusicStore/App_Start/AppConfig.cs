@@ -1,4 +1,7 @@
-﻿using MvcMusicStore.Filters;
+﻿using System.Web.Mvc;
+using Autofac;
+using Autofac.Integration.Mvc;
+using MvcMusicStore.Filters;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,6 +17,18 @@ namespace MvcMusicStore
         public static void Configure()
         {
             System.Data.Entity.Database.SetInitializer(new MvcMusicStore.Models.SampleData());
+
+            var builder = new ContainerBuilder();
+            builder.RegisterControllers(typeof(MvcApplication).Assembly);
+
+            builder.RegisterType<AlbumRepository>().Named<IAlbumRepository>("inner");
+            builder.RegisterType<InMemoryCacheService>().AsImplementedInterfaces();
+
+            builder.RegisterDecorator<IAlbumRepository>(
+                (c, inner) => new CacheableAlbumRepository(inner, c.Resolve<ICacheService>()), "inner");
+
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             CreateAdminUser();
         }
